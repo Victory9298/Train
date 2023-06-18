@@ -50,7 +50,7 @@ public class PassengerService {
             return repository.save(passenger);
         } else {
             logger.warn("Passenger with name " + name + " and surname " + surname + " and birthday " + birthDate + " already exists in database");
-            return passengersDB.get(0);
+            throw new BusinessException(ExceptionMessage.OBJECT_ALREADY_EXISTS);
         }
     }
     public List<Passenger> findPassengerByNameAndSurnameAndBirthDate(String name, String surname, CharSequence birthDate) {
@@ -58,9 +58,9 @@ public class PassengerService {
         LocalDateTime birthDateTime = parsedBD.atStartOfDay();
         return repository.findPassengerByNameAndSurnameAndBirthDate(name, surname, birthDateTime);
     }
-    public List<Passenger> findPassengerByNameAndSurnameAndBirthDateAsDate(String name, String surname, LocalDateTime birthDate) {
-        return repository.findPassengerByNameAndSurnameAndBirthDate(name, surname, birthDate);
-    }
+//    public List<Passenger> findPassengerByNameAndSurnameAndBirthDateAsDate(String name, String surname, LocalDateTime birthDate) {
+//        return repository.findPassengerByNameAndSurnameAndBirthDate(name, surname, birthDate);
+//    }
     public void deletePassenger(int id) {
         repository.findById(id).orElseThrow(() -> new BusinessException(ExceptionMessage.OBJECT_ALREADY_DELETED));
         repository.deleteById(id);

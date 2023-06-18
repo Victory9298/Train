@@ -30,8 +30,10 @@ public class TicketService {
     private ScheduleService scheduleService;
 
     @Autowired
-    private PassengerService passengerService;
+    private PassengerRepository passengerRepository;
 
+    @Autowired
+    private PassengerService passengerService;
     Logger logger = LoggerFactory.getLogger(TicketService.class);
 
     public TicketService() {};
@@ -59,7 +61,7 @@ public class TicketService {
         }
         Integer train_id = scheduleItem.getTrain().getId();
         Integer station_id = scheduleItem.getStation().getId();
-        List <Passenger> passengers = passengerService.findPassengerByNameAndSurnameAndBirthDateAsDate(
+        List <Passenger> passengers = passengerRepository.findPassengerByNameAndSurnameAndBirthDate(
                 passengerDto.getName(),
                 passengerDto.getSurname(),
                 passengerDto.getBirthDate());
