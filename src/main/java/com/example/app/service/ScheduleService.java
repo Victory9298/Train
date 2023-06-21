@@ -49,7 +49,7 @@ public class ScheduleService {
     }
 
     public List<ScheduleDB> getScheduleNative() {
-        return scheduleDBService.getScheduleJpql();
+        return scheduleDBService.getScheduleNative();
     }
     public List<ScheduleDB> getScheduleJpql() {
         return scheduleDBService.getScheduleJpql();
@@ -68,7 +68,7 @@ public class ScheduleService {
 
         List<Schedule> schedules = scheduleRepository.findScheduleByStation(station);
         if (schedules.size() == 0) {
-            logger.info("Schedule by station " + station.toString() + " is not founud ");
+            logger.error("Schedule by station " + station.toString() + " is not founud ");
             throw(new BusinessException(ExceptionMessage.OBJECT_NOT_FOUND));
         }
         return schedules;
@@ -98,15 +98,12 @@ public class ScheduleService {
         Optional<Station> station = Optional.ofNullable(stationService.findStationById(station_id)
                 .orElseThrow(() -> new BusinessException(ExceptionMessage.OBJECT_NOT_FOUND)));
 
-        boolean response = false;
-
         List<Schedule> schedule = scheduleRepository.findScheduleByTrainAndStation(train, station);
         for (Schedule elem: schedule) {
-            if (elem.getArrivalTime().isAfter(LocalDateTime.now().plusMinutes(minutes))) {
-                response = true;
+            if (LocalDateTime.now().plusMinutes(minutes).isBefore(elem.getArrivalTime())) {
+                return true;
             }
-        }
-        return response;
+        } return false;
     }
 
     public Schedule addNewScheduleItem(ScheduleDto scheduleDto)  {

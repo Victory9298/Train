@@ -40,6 +40,7 @@ public class Schedule {
     LocalDateTime arrivalTime;
 
     @NotNull
+    @Column(name = "places_left")
     Integer places_left;
 
     public Integer getPlaces_left() {

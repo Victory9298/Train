@@ -27,11 +27,11 @@ public class ScheduleDto {
 
     @NotNull
     @JsonDeserialize(as = LocalDateTime.class)
-    private LocalDateTime arrival_time;
+    private LocalDateTime arrivalTime;
 
     @NotNull
     @JsonDeserialize(as = LocalDateTime.class)
-    private LocalDateTime departure_time;
+    private LocalDateTime departureTime;
 
     public Integer getStationId() {
         return stationId;
@@ -42,10 +42,10 @@ public class ScheduleDto {
     }
 
     public LocalDateTime getArrivalTime() {
-        return arrival_time;
+        return arrivalTime;
     }
 
     public LocalDateTime getDepartureTime() {
-        return departure_time;
+        return departureTime;
     }
 }

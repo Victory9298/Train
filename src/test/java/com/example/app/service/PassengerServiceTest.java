@@ -31,17 +31,15 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
-@Sql({"/data.sql"})
 class PassengerServiceTest {
     private static final int id = 1;
     private static final LocalDateTime birthDate = LocalDateTime.of(2005, 05, 12, 00, 00,00);;
-    private static final String name = "Ivan";
-    private static final String surname = "Ivanov";
+    private static final String name = "Ivan", surname = "Ivanov";
     @Mock PassengerRepository repo;
     @InjectMocks  PassengerService passengerService;
 
     @Test
-    void findPassengerById_shouldFindPassenger() {
+    void findPassengerByIdShouldFindPassenger() {
 
         Passenger passenger = new Passenger(id, name, surname, birthDate);
 
@@ -60,7 +58,7 @@ class PassengerServiceTest {
     }
 
     @Test
-    void findPassengerById_shouldCallRepository() {
+    void findPassengerByIdShouldCallRepository() {
 
         Passenger passenger = Mockito.mock(Passenger.class);
         when(repo.findPassengerById(id)).thenReturn(passenger);

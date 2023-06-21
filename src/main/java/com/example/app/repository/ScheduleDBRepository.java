@@ -13,7 +13,8 @@ import java.util.List;
 
 @Repository
 public interface ScheduleDBRepository extends JpaRepository<ScheduleDB, Integer> {
-    @Query(value = "Select new com.example.app.entity.ScheduleDB(sc.id, t.number, s.name, sc.departureTime, sc.arrivalTime, sc.places_left)" +
+    @Query(value = "Select new com.example.app.entity.ScheduleDB(sc.id, t.number, s.name, " +
+            "sc.departureTime, sc.arrivalTime, sc.places_left)" +
             "from  Schedule as sc " +
             "join Station as s on s.id = sc.id " +
             "join Train as t on t.id = sc.id")

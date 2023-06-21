@@ -14,6 +14,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.persistence.criteria.CriteriaBuilder;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
@@ -36,40 +37,144 @@ public class TicketService {
     private PassengerService passengerService;
     Logger logger = LoggerFactory.getLogger(TicketService.class);
 
+    private static final int MIN_PERIOD_BEFORE_DEPART = 10;
+
     public TicketService() {};
 
     public Iterable<Ticket> getAllRegisteredPassengers() {
 
         return  repository.getAllRegisteredPassengers();
     }
+//    public String buyTicket(PassengerDto passengerDto, Integer scheduleId,
+//                          Integer end_station_id, CharSequence arrivalTime) {
+//
+//        Schedule scheduleItem = scheduleService.findById(scheduleId)
+//                .orElseThrow(() -> new BusinessException(ExceptionMessage.OBJECT_NOT_FOUND));
+//
+//        Integer placesLeft = scheduleItem.getPlaces_left();
+//
+//        Passenger passenger;
+//
+//        String errorMessage;
+//
+//        if (placesLeft < 1) {
+//            errorMessage = "No places left. Ticket can't be bought.";
+//            logger.error(errorMessage);
+//            return errorMessage;
+//        }
+//        Integer train_id = scheduleItem.getTrain().getId();
+//        Integer station_id = scheduleItem.getStation().getId();
+//        List <Passenger> passengers = passengerRepository.findPassengerByNameAndSurnameAndBirthDate(
+//                passengerDto.getName(),
+//                passengerDto.getSurname(),
+//                passengerDto.getBirthDate());
+//
+//        if (!scheduleService.checkMinutesLeftBeforeTrainTime(MIN_PERIOD_BEFORE_DEPART, train_id, station_id)) {
+//            errorMessage = "Less than 10 minutes before train departure. Ticket can't be bought.";
+//            logger.error(errorMessage);
+//            return errorMessage;
+//        }
+//
+//        if (passengers.size() == 0) {
+//            logger.info("Passenger with name " + passengerDto.getName() + " and surname " + passengerDto.getSurname()
+//                    + " and birthday " + passengerDto.getBirthDate() + " isn't found. A new passenger will be added.");
+//            passenger = passengerService.addNewPassenger(passengerDto);
+//        } else {
+//            passenger = passengers.get(0);
+//        }
+//
+//            LocalDateTime arrivalTimeDB = LocalDateTime.parse(arrivalTime, DateTimeFormatter.ofPattern("yyyy-MM-dd@HH:mm:ss"));
+//
+//            Ticket ticket = Ticket.builder()
+//                    .trainId(scheduleItem.getTrain().getId())
+//                    .passengerId(passenger.getId())
+//                    .startStationId(scheduleItem.getStation().getId())
+//                    .endStationId(end_station_id)
+//                    .departureTime(scheduleItem.getDepartureTime())
+//                    .arrivalTime(arrivalTimeDB)
+//                    .build();
+//
+//            repository.save(ticket);
+//
+//            scheduleItem.setPlaces_left(placesLeft - 1);
+//
+//        return "Ticket bought successfully";
+//    }
+
     public void buyTicket(PassengerDto passengerDto, Integer scheduleId,
-                          Integer end_station_id, CharSequence arrivalTime) {
+                            Integer end_station_id, CharSequence arrivalTime) {
 
-        Optional<Schedule> schedule = Optional.ofNullable(scheduleService.findById(scheduleId)
-                .orElseThrow(() -> new BusinessException(ExceptionMessage.OBJECT_NOT_FOUND)));
+        Schedule scheduleItem = scheduleService.findById(scheduleId)
+                .orElseThrow(() -> new BusinessException(ExceptionMessage.OBJECT_NOT_FOUND));
 
-        Schedule scheduleItem = schedule.get();
-
-        Integer places_left = scheduleItem.getPlaces_left();
-
-        Passenger passenger;
-        Boolean buyTicket = true;
-
-        if (places_left < 1) {
-            logger.warn("No places left. Ticket can't be bought.");
-            buyTicket = false;
-        }
         Integer train_id = scheduleItem.getTrain().getId();
         Integer station_id = scheduleItem.getStation().getId();
+
+        Passenger passenger = getOrCreatePassenger(passengerDto);
+        Boolean arePlacesAvailable = arePlacesAvailable(scheduleItem);
+        Boolean enoughTimeBeforeDepart = enoughTimeBeforeDepart(train_id, station_id);
+
+        if (arePlacesAvailable && enoughTimeBeforeDepart) {
+
+            LocalDateTime arrivalTimeDB = LocalDateTime.parse(arrivalTime, DateTimeFormatter.ofPattern("yyyy-MM-dd@HH:mm:ss"));
+            Ticket ticket = Ticket.builder()
+                    .trainId(train_id)
+                    .passengerId(passenger.getId())
+                    .startStationId(station_id)
+                    .endStationId(end_station_id)
+                    .departureTime(scheduleItem.getDepartureTime())
+                    .arrivalTime(arrivalTimeDB)
+                    .build();
+
+            repository.save(ticket);
+
+            scheduleItem.setPlaces_left(scheduleItem.getTrain().getPlacesNumber() - 1);
+
+        } else {
+
+            String message;
+
+            if (!arePlacesAvailable) {
+                message = "Not enough places";
+            } else {
+                message = "It is too late";
+            }
+            throw new BusinessException(message);
+        }
+    }
+
+    private Boolean arePlacesAvailable(Schedule scheduleItem) {
+
+        Integer placesLeft = scheduleItem.getPlaces_left();
+        if (placesLeft < 1) {
+            String errorMessage = "No places left. Ticket can't be bought.";
+            logger.error(errorMessage);
+            return false;
+        }
+        else {
+            return true;
+        }
+    }
+
+    private Boolean enoughTimeBeforeDepart(Integer train_id, Integer station_id) {
+
+        if (!scheduleService.checkMinutesLeftBeforeTrainTime(MIN_PERIOD_BEFORE_DEPART, train_id, station_id)) {
+            String errorMessage = "Less than 10 minutes before train departure. Ticket can't be bought.";
+            logger.error(errorMessage);
+            return false;
+        } else {
+            return true;
+        }
+    }
+
+    public Passenger getOrCreatePassenger(PassengerDto passengerDto) {
+
+        Passenger passenger;
+
         List <Passenger> passengers = passengerRepository.findPassengerByNameAndSurnameAndBirthDate(
                 passengerDto.getName(),
                 passengerDto.getSurname(),
                 passengerDto.getBirthDate());
-
-        if (!scheduleService.checkMinutesLeftBeforeTrainTime(10, train_id, station_id)) {
-            logger.warn("checkMinutesLeftBeforeTrainTime: less than 10 minutes before train departure");
-            buyTicket = false;
-        }
 
         if (passengers.size() == 0) {
             logger.info("Passenger with name " + passengerDto.getName() + " and surname " + passengerDto.getSurname()
@@ -79,23 +184,7 @@ public class TicketService {
             passenger = passengers.get(0);
         }
 
-        if (buyTicket) {
-
-            LocalDateTime arrivalTimeDB = LocalDateTime.parse(arrivalTime, DateTimeFormatter.ofPattern("yyyy-MM-dd@HH:mm:ss"));
-
-            Ticket ticket = Ticket.builder()
-                    .trainId(scheduleItem.getTrain().getId())
-                    .passengerId(passenger.getId())
-                    .startStationId(scheduleItem.getStation().getId())
-                    .endStationId(end_station_id)
-                    .departureTime(scheduleItem.getDepartureTime())
-                    .arrivalTime(arrivalTimeDB)
-                    .build();
-
-            repository.save(ticket);
-
-            scheduleItem.setPlaces_left(places_left - 1);
-        }
+        return passenger;
     }
 
     public Optional<Ticket> findTicketById(Integer id) {

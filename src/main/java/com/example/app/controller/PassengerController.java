@@ -18,11 +18,9 @@ import java.util.List;
         name = "Passenger Resource")
 public class PassengerController {
 
-    private final PassengerRepository repository;
     private PassengerService passengerService;
 
-    public PassengerController(PassengerRepository repository, PassengerService passengerService) {
-        this.repository = repository;
+    public PassengerController(PassengerService passengerService) {
         this.passengerService = passengerService;
     }
 

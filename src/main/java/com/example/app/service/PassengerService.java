@@ -23,7 +23,6 @@ public class PassengerService {
 
     @Autowired
     private PassengerRepository repository;
-
     Logger logger = LoggerFactory.getLogger(ScheduleService.class);
 
     public PassengerService() {}
@@ -58,9 +57,7 @@ public class PassengerService {
         LocalDateTime birthDateTime = parsedBD.atStartOfDay();
         return repository.findPassengerByNameAndSurnameAndBirthDate(name, surname, birthDateTime);
     }
-//    public List<Passenger> findPassengerByNameAndSurnameAndBirthDateAsDate(String name, String surname, LocalDateTime birthDate) {
-//        return repository.findPassengerByNameAndSurnameAndBirthDate(name, surname, birthDate);
-//    }
+
     public void deletePassenger(int id) {
         repository.findById(id).orElseThrow(() -> new BusinessException(ExceptionMessage.OBJECT_ALREADY_DELETED));
         repository.deleteById(id);

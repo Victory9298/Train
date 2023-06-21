@@ -52,27 +52,28 @@
             INSERT INTO passenger (id, name, surname, birth_date) VALUES(3, 'John', 'Galt', '1960-05-12');
         </sql>
     </changeSet>
-    <changeSet id="schedule-creation-2" author="Victoria">
+    <changeSet id="schedule-creation-5" author="Victoria">
         <sql>
             CREATE TABLE IF NOT EXISTS schedule (
             id SERIAL PRIMARY KEY,
             station_id INTEGER NOT NULL,
             train_id INTEGER NOT NULL,
-            arrivalTime DATETIME,
-            departureTime DATETIME,
+            arrival_time DATETIME,
+            departure_time DATETIME,
+            places_left INTEGER NOT NULL,
             FOREIGN KEY (station_id) REFERENCES station(id),
             FOREIGN KEY (train_id) REFERENCES train(id)
             )
         </sql>
     </changeSet>
-    <changeSet id="scheduledb-creation-3" author="Victoria">
+    <changeSet id="scheduledb-creation-5" author="Victoria">
         <sql>
             CREATE TABLE IF NOT EXISTS scheduledb (
             id SERIAL PRIMARY KEY,
             train_name VARCHAR(500),
             station_name VARCHAR(500),
-            arrivalTime DATETIME,
-            departureTime DATETIME,
+            arrival_time DATETIME,
+            departure_time DATETIME,
             places_left INTEGER
                 )
         </sql>

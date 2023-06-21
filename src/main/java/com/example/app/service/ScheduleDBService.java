@@ -25,6 +25,10 @@ public class ScheduleDBService {
     public List<ScheduleDB> getScheduleJpql() {
         return scheduleDBRepository.findAllJpql();
     }
+
+    public List<ScheduleDB> getScheduleNative() {
+        return scheduleDBRepository.findAllNative();
+    }
     public List<Train> getTrainFromStation(Integer toStation_id,
                                            LocalDateTime fromTime,
                                            LocalDateTime toDate) {

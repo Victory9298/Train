@@ -29,7 +29,7 @@ public class TicketController {
                                           @RequestParam Integer scheduleId,
                                           @RequestParam Integer end_station_id,
                                           @RequestParam CharSequence arrivalTime) {
-        ticketService.buyTicket(passengerDto, scheduleId, end_station_id, arrivalTime);
+      ticketService.buyTicket(passengerDto, scheduleId, end_station_id, arrivalTime);
     }
 
     @GetMapping("/ticket/{id}")
