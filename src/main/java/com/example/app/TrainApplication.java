@@ -3,6 +3,8 @@ import io.swagger.v3.oas.annotations.OpenAPIDefinition;
 import io.swagger.v3.oas.annotations.enums.SecuritySchemeIn;
 import io.swagger.v3.oas.annotations.enums.SecuritySchemeType;
 import io.swagger.v3.oas.annotations.security.SecurityScheme;
+import org.apache.kafka.clients.admin.NewTopic;
+import org.springframework.boot.ApplicationRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.autoconfigure.domain.EntityScan;
@@ -10,6 +12,8 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
+import org.springframework.kafka.config.TopicBuilder;
+import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.orm.hibernate5.LocalSessionFactoryBean;
 
 @SpringBootApplication
@@ -25,6 +29,20 @@ public class TrainApplication {
 
 		SpringApplication.run(TrainApplication.class, args);
 
+	}
+
+	@Bean
+	public NewTopic topic() {
+		return TopicBuilder.name("topic1")
+				.partitions(10)
+				.replicas(1)
+				.build();
+	}
+	@Bean
+	public ApplicationRunner runner(KafkaTemplate<String, String> template) {
+		return args -> {
+			template.send("topic1", "test12");
+		};
 	}
 
 }

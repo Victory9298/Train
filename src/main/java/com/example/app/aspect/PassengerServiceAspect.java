@@ -7,12 +7,16 @@ import org.aspectj.lang.annotation.Before;
 import org.aspectj.lang.annotation.Pointcut;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Component;
 
 @Aspect
 @Component
 public class PassengerServiceAspect {
 
+    @Autowired
+    private KafkaTemplate<String, String> kafkaTemplate;
     Logger logger = LoggerFactory.getLogger(PassengerServiceAspect.class);
 
     @Pointcut("execution(* com.example.app.service.PassengerService.*(..)) ")
@@ -21,7 +25,9 @@ public class PassengerServiceAspect {
     @Before("anyPassengerervice()")
     public void beforeAdvice(JoinPoint joinPoint)
     {
-        logger.info("Start operation: " + joinPoint.getSignature());
+        String msg = "Start operation: " + joinPoint.getSignature();
+        logger.info(msg);
+        kafkaTemplate.send("topic1", msg);
     }
 
     @After("anyPassengerervice()")
