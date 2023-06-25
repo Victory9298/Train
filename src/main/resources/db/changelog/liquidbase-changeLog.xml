@@ -95,4 +95,36 @@
             )
         </sql>
     </changeSet>
+    <changeSet id="user-table-creation" author="Victoria">
+        <sql>
+            CREATE TABLE IF NOT EXISTS users (
+            id SERIAL PRIMARY KEY,
+            commonname VARCHAR(225) NOT NULL,
+            email VARCHAR(225) NOT NULL,
+            created_at TIMESTAMP(0) DEFAULT NOW()
+            )
+        </sql>
+    </changeSet>
+    <changeSet id="default-user-creation" author="Victoria">
+        <sql>
+            INSERT INTO users (commonname, email) VALUES('Ivan Ivanov', 'sdfg@gmail.com');
+            INSERT INTO users (commonname, email) VALUES('Petrov Petr', 'sdfg@gmail.com');
+            INSERT INTO users (commonname, email) VALUES('Samoylova Elena', '23423@gmai.com')
+        </sql>
+    </changeSet>
+    <changeSet id="user-role-table-creation" author="Victoria">
+        <sql>
+            CREATE TABLE IF NOT EXISTS user_role (
+            id SERIAL PRIMARY KEY,
+            role_user VARCHAR(50) NOT NULL
+        )
+        </sql>
+    </changeSet>
+    <changeSet id="default-user-role-creation" author="Victoria">
+        <sql>
+            INSERT INTO user_role (role_user) VALUES('CLIENT');
+            INSERT INTO user_role (role_user) VALUES('EMPLOYEE');
+            INSERT INTO user_role (role_user) VALUES('ADMIN');
+        </sql>
+    </changeSet>
 </databaseChangeLog>

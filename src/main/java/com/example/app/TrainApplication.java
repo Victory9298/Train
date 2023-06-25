@@ -1,4 +1,8 @@
 package com.example.app;
+import io.swagger.v3.oas.annotations.OpenAPIDefinition;
+import io.swagger.v3.oas.annotations.enums.SecuritySchemeIn;
+import io.swagger.v3.oas.annotations.enums.SecuritySchemeType;
+import io.swagger.v3.oas.annotations.security.SecurityScheme;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.autoconfigure.domain.EntityScan;
@@ -13,19 +17,16 @@ import org.springframework.orm.hibernate5.LocalSessionFactoryBean;
 @ComponentScan(basePackages = {"com.example.app.*" })
 @EntityScan("com.example.app.entity")
 @EnableJpaRepositories
+@OpenAPIDefinition
+@SecurityScheme(name = "Authorization", scheme = "apiKey", type = SecuritySchemeType.APIKEY, in = SecuritySchemeIn.HEADER)
 public class TrainApplication {
 
 	public static void main(String[] args) {
 
 		SpringApplication.run(TrainApplication.class, args);
+
 	}
 
-//	@Bean(name="entityManagerFactory")
-//	public LocalSessionFactoryBean sessionFactory() {
-//		LocalSessionFactoryBean sessionFactory = new LocalSessionFactoryBean();
-//
-//		return sessionFactory;
-//	}
 }
 
 
