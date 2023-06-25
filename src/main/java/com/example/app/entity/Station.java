@@ -14,6 +14,12 @@ public class Station {
     private String name;
     public Station() {
     }
+
+    public Station(Integer id, String name) {
+        this.id = id;
+        this.name = name;
+    }
+
     public Integer getId() {
         return id;
     }

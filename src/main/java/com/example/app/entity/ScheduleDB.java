@@ -40,6 +40,6 @@ public class ScheduleDB {
 
     @NotNull
     @Column(name="places_left")
-    Integer places_left;
+    Integer placesLeft;
 
 }

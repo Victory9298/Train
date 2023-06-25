@@ -25,92 +25,38 @@ import java.util.Optional;
 public class TicketService {
 
     @Autowired
-    private TicketRepository repository;
-
+    public TicketRepository repository;
     @Autowired
     private ScheduleService scheduleService;
-
     @Autowired
-    private PassengerRepository passengerRepository;
-
+    public ScheduleRepository scheduleRepository;
     @Autowired
-    private PassengerService passengerService;
+    public PassengerRepository passengerRepository;
+    @Autowired
+    public PassengerService passengerService;
     Logger logger = LoggerFactory.getLogger(TicketService.class);
 
     private static final int MIN_PERIOD_BEFORE_DEPART = 10;
 
     public TicketService() {};
 
+    public TicketService(TicketRepository repository) {this.repository = repository;};
+
     public Iterable<Ticket> getAllRegisteredPassengers() {
 
         return  repository.getAllRegisteredPassengers();
     }
-//    public String buyTicket(PassengerDto passengerDto, Integer scheduleId,
-//                          Integer end_station_id, CharSequence arrivalTime) {
-//
-//        Schedule scheduleItem = scheduleService.findById(scheduleId)
-//                .orElseThrow(() -> new BusinessException(ExceptionMessage.OBJECT_NOT_FOUND));
-//
-//        Integer placesLeft = scheduleItem.getPlaces_left();
-//
-//        Passenger passenger;
-//
-//        String errorMessage;
-//
-//        if (placesLeft < 1) {
-//            errorMessage = "No places left. Ticket can't be bought.";
-//            logger.error(errorMessage);
-//            return errorMessage;
-//        }
-//        Integer train_id = scheduleItem.getTrain().getId();
-//        Integer station_id = scheduleItem.getStation().getId();
-//        List <Passenger> passengers = passengerRepository.findPassengerByNameAndSurnameAndBirthDate(
-//                passengerDto.getName(),
-//                passengerDto.getSurname(),
-//                passengerDto.getBirthDate());
-//
-//        if (!scheduleService.checkMinutesLeftBeforeTrainTime(MIN_PERIOD_BEFORE_DEPART, train_id, station_id)) {
-//            errorMessage = "Less than 10 minutes before train departure. Ticket can't be bought.";
-//            logger.error(errorMessage);
-//            return errorMessage;
-//        }
-//
-//        if (passengers.size() == 0) {
-//            logger.info("Passenger with name " + passengerDto.getName() + " and surname " + passengerDto.getSurname()
-//                    + " and birthday " + passengerDto.getBirthDate() + " isn't found. A new passenger will be added.");
-//            passenger = passengerService.addNewPassenger(passengerDto);
-//        } else {
-//            passenger = passengers.get(0);
-//        }
-//
-//            LocalDateTime arrivalTimeDB = LocalDateTime.parse(arrivalTime, DateTimeFormatter.ofPattern("yyyy-MM-dd@HH:mm:ss"));
-//
-//            Ticket ticket = Ticket.builder()
-//                    .trainId(scheduleItem.getTrain().getId())
-//                    .passengerId(passenger.getId())
-//                    .startStationId(scheduleItem.getStation().getId())
-//                    .endStationId(end_station_id)
-//                    .departureTime(scheduleItem.getDepartureTime())
-//                    .arrivalTime(arrivalTimeDB)
-//                    .build();
-//
-//            repository.save(ticket);
-//
-//            scheduleItem.setPlaces_left(placesLeft - 1);
-//
-//        return "Ticket bought successfully";
-//    }
 
-    public void buyTicket(PassengerDto passengerDto, Integer scheduleId,
+    public String buyTicket(PassengerDto passengerDto, Integer scheduleId,
                             Integer end_station_id, CharSequence arrivalTime) {
 
-        Schedule scheduleItem = scheduleService.findById(scheduleId)
+        Schedule scheduleItem = scheduleRepository.findById(scheduleId)
                 .orElseThrow(() -> new BusinessException(ExceptionMessage.OBJECT_NOT_FOUND));
 
         Integer train_id = scheduleItem.getTrain().getId();
         Integer station_id = scheduleItem.getStation().getId();
 
-        Passenger passenger = getOrCreatePassenger(passengerDto);
+        Passenger passenger = getOrCreatePassenger(passengerDto, passengerRepository);
         Boolean arePlacesAvailable = arePlacesAvailable(scheduleItem);
         Boolean enoughTimeBeforeDepart = enoughTimeBeforeDepart(train_id, station_id);
 
@@ -128,24 +74,25 @@ public class TicketService {
 
             repository.save(ticket);
 
-            scheduleItem.setPlaces_left(scheduleItem.getTrain().getPlacesNumber() - 1);
-
+            scheduleItem.setPlacesLeft(scheduleItem.getTrain().getPlacesNumber() - 1);
+            return "success";
         } else {
 
-            String message;
+            String message = "";
 
             if (!arePlacesAvailable) {
                 message = "Not enough places";
             } else {
                 message = "It is too late";
             }
-            throw new BusinessException(message);
+//            throw new BusinessException(message);
+            return message;
         }
     }
 
-    private Boolean arePlacesAvailable(Schedule scheduleItem) {
+    public Boolean arePlacesAvailable(Schedule scheduleItem) {
 
-        Integer placesLeft = scheduleItem.getPlaces_left();
+        Integer placesLeft = scheduleItem.getPlacesLeft();
         if (placesLeft < 1) {
             String errorMessage = "No places left. Ticket can't be bought.";
             logger.error(errorMessage);
@@ -156,7 +103,7 @@ public class TicketService {
         }
     }
 
-    private Boolean enoughTimeBeforeDepart(Integer train_id, Integer station_id) {
+    public Boolean enoughTimeBeforeDepart(Integer train_id, Integer station_id) {
 
         if (!scheduleService.checkMinutesLeftBeforeTrainTime(MIN_PERIOD_BEFORE_DEPART, train_id, station_id)) {
             String errorMessage = "Less than 10 minutes before train departure. Ticket can't be bought.";
@@ -167,7 +114,7 @@ public class TicketService {
         }
     }
 
-    public Passenger getOrCreatePassenger(PassengerDto passengerDto) {
+    public Passenger getOrCreatePassenger(PassengerDto passengerDto, PassengerRepository passengerRepository) {
 
         Passenger passenger;
 

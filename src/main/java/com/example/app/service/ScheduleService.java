@@ -48,6 +48,9 @@ public class ScheduleService {
         this.trainService = trainService;
     }
 
+    public ScheduleService(ScheduleRepository scheduleRepository) {
+        this.scheduleRepository = scheduleRepository;
+    }
     public List<ScheduleDB> getScheduleNative() {
         return scheduleDBService.getScheduleNative();
     }
@@ -119,7 +122,7 @@ public class ScheduleService {
                     .station(station)
                     .departureTime(scheduleDto.getDepartureTime())
                     .arrivalTime(scheduleDto.getArrivalTime())
-                    .places_left(train.getPlacesNumber())
+                    .placesLeft(train.getPlacesNumber())
                     .build();
 
             logger.info("Schedule to save: " + schedule.toString());

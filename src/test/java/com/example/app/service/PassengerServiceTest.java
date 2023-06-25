@@ -37,24 +37,20 @@ class PassengerServiceTest {
     private static final String name = "Ivan", surname = "Ivanov";
     @Mock PassengerRepository repo;
     @InjectMocks  PassengerService passengerService;
-
+    Passenger passenger;
+    @BeforeEach
+    void setUp() {
+        passenger = new Passenger(1, name, surname, birthDate);
+    }
     @Test
     void findPassengerByIdShouldFindPassenger() {
 
-        Passenger passenger = new Passenger(id, name, surname, birthDate);
+        when(repo.findPassengerById(id)).thenReturn(passenger);
+        Passenger result1 = passengerService.findPassengerById(1);
+        Passenger result2 = passengerService.findPassengerById(2);
 
-        PassengerRepository repository = Mockito.mock(PassengerRepository.class);
-        repository.save(passenger);
-
-        lenient().when(repo.findPassengerById(id)).thenReturn(passenger);
-
-        repo.save(passenger);
-
-        ArgumentCaptor<Passenger> passengerCaptor = ArgumentCaptor.forClass(Passenger.class);
-        verify(repo).save(passengerCaptor.capture());
-
-        Passenger savedPassenger = passengerCaptor.getValue();
-        assertEquals(id, savedPassenger.getId());
+        assertEquals(id, result1.getId());
+        assertNull(result2);
     }
 
     @Test

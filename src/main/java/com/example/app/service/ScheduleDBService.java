@@ -1,5 +1,6 @@
 package com.example.app.service;
 
+import com.example.app.entity.Schedule;
 import com.example.app.entity.ScheduleDB;
 import com.example.app.entity.Train;
 import com.example.app.repository.ScheduleDBRepository;

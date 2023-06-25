@@ -41,13 +41,16 @@ public class Schedule {
 
     @NotNull
     @Column(name = "places_left")
-    Integer places_left;
+    Integer placesLeft;
 
-    public Integer getPlaces_left() {
-        return places_left;
+    public Schedule(Integer id, Integer stationId, Integer trainId, LocalDateTime arrivalTime, LocalDateTime departureTime) {
     }
 
-    public void setPlaces_left(Integer places_left) {
-        this.places_left = places_left;
+    public Integer getPlacesLeft() {
+        return placesLeft;
+    }
+
+    public void setPlacesLeft(Integer placesLeft) {
+        this.placesLeft = placesLeft;
     }
 }

@@ -34,4 +34,10 @@ public class PassengerDto {
     public LocalDateTime getBirthDate() {
         return birthDate;
     }
+
+    public PassengerDto(String name, String surname, LocalDateTime birthDate) {
+        this.name = name;
+        this.surname = surname;
+        this.birthDate = birthDate;
+    }
 }

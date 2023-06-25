@@ -7,6 +7,7 @@ import com.example.app.repository.PassengerRepository;
 import com.example.app.service.PassengerService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDateTime;
