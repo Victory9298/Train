@@ -8,6 +8,7 @@ import com.example.app.repository.StationRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -26,6 +27,9 @@ public class StationService {
 
     Logger logger = LoggerFactory.getLogger(StationService.class);
 
+    @Autowired
+    private KafkaTemplate<String, String> kafkaTemplate;
+
     public StationService() {}
     public List<Station> findAllStations() {
         return repository.findAll();
@@ -40,7 +44,9 @@ public class StationService {
             return repository.save(station);
         } else {
             Station foundStation = stations.get(0);
-            logger.warn(foundStation.toString() + " already exists ");
+            String msg = foundStation.toString() + " already exists ";
+            logger.warn(msg);
+            kafkaTemplate.send("topic1", msg);
 
             return foundStation;
         }

@@ -5,13 +5,17 @@ import com.auth0.jwt.exceptions.JWTDecodeException;
 import com.example.app.entity.User;
 import com.example.app.error.exception.AuthorizationException;
 import com.example.app.repository.UserRepository;
+import com.example.app.service.ScheduleService;
 import com.example.app.service.UserService;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.apache.logging.log4j.util.Strings;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -40,12 +44,22 @@ public class JWTAuthFilter extends OncePerRequestFilter {
     @Autowired
     UserService userService;
 
+    @Autowired
+    private KafkaTemplate<String, String> kafkaTemplate;
+
+    Logger logger = LoggerFactory.getLogger(ScheduleService.class);
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response,
                                     FilterChain filterChain) throws ServletException, IOException {
-        System.out.println("JWT filter is working");
+        String msg = "JWT filter is working";
+        logger.info(msg);
+        kafkaTemplate.send("topic1", msg);
+
         String accessToken = request.getHeader("Authorization");
-        System.out.println(accessToken);
+        msg = "accessToken: " + accessToken;
+        logger.info(msg);
+        kafkaTemplate.send("topic1", msg);
+
         if (Strings.isEmpty(accessToken)) {
             filterChain.doFilter(request, response);
             return;

@@ -41,8 +41,6 @@ public class Passenger {
         this.birthDate = birthDate;
     }
 
-
-
     public Integer getId() {
         return id;
     }

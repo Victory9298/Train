@@ -11,6 +11,7 @@ import com.example.app.repository.TicketRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -35,7 +36,8 @@ public class TicketService {
     @Autowired
     public PassengerService passengerService;
     Logger logger = LoggerFactory.getLogger(TicketService.class);
-
+    @Autowired
+    private KafkaTemplate<String, String> kafkaTemplate;
     private static final int MIN_PERIOD_BEFORE_DEPART = 10;
 
     public TicketService() {};
@@ -73,9 +75,10 @@ public class TicketService {
                     .build();
 
             repository.save(ticket);
-
             scheduleItem.setPlacesLeft(scheduleItem.getTrain().getPlacesNumber() - 1);
+            kafkaTemplate.send("topic1", "buy ticket: success");
             return "success";
+
         } else {
 
             String message = "";
@@ -86,6 +89,8 @@ public class TicketService {
                 message = "It is too late";
             }
 //            throw new BusinessException(message);
+            logger.info("buy ticket: " + message);
+            kafkaTemplate.send("topic1", "buy ticket: " + message);
             return message;
         }
     }
@@ -96,6 +101,7 @@ public class TicketService {
         if (placesLeft < 1) {
             String errorMessage = "No places left. Ticket can't be bought.";
             logger.error(errorMessage);
+            kafkaTemplate.send("topic1", errorMessage);
             return false;
         }
         else {
@@ -108,6 +114,7 @@ public class TicketService {
         if (!scheduleService.checkMinutesLeftBeforeTrainTime(MIN_PERIOD_BEFORE_DEPART, train_id, station_id)) {
             String errorMessage = "Less than 10 minutes before train departure. Ticket can't be bought.";
             logger.error(errorMessage);
+            kafkaTemplate.send("topic1", errorMessage);
             return false;
         } else {
             return true;
@@ -124,8 +131,10 @@ public class TicketService {
                 passengerDto.getBirthDate());
 
         if (passengers.size() == 0) {
-            logger.info("Passenger with name " + passengerDto.getName() + " and surname " + passengerDto.getSurname()
-                    + " and birthday " + passengerDto.getBirthDate() + " isn't found. A new passenger will be added.");
+            String msg = "Passenger with name " + passengerDto.getName() + " and surname " + passengerDto.getSurname()
+                    + " and birthday " + passengerDto.getBirthDate() + " isn't found. A new passenger will be added.";
+            logger.info(msg);
+            kafkaTemplate.send("topic1", msg);
             passenger = passengerService.addNewPassenger(passengerDto);
         } else {
             passenger = passengers.get(0);

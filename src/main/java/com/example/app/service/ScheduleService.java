@@ -8,6 +8,7 @@ import com.example.app.repository.ScheduleDBRepository;
 import com.example.app.repository.ScheduleRepository;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.slf4j.Logger;
@@ -33,6 +34,9 @@ public class ScheduleService {
 
     @Autowired
     private TrainService trainService;
+
+    @Autowired
+    private KafkaTemplate<String, String> kafkaTemplate;
 
     Logger logger = LoggerFactory.getLogger(ScheduleService.class);
 
@@ -71,7 +75,9 @@ public class ScheduleService {
 
         List<Schedule> schedules = scheduleRepository.findScheduleByStation(station);
         if (schedules.size() == 0) {
-            logger.error("Schedule by station " + station.toString() + " is not founud ");
+            String msg = "Schedule by station " + station.toString() + " is not founud ";
+            logger.error(msg);
+            kafkaTemplate.send("topic1", msg);
             throw(new BusinessException(ExceptionMessage.OBJECT_NOT_FOUND));
         }
         return schedules;
@@ -125,11 +131,14 @@ public class ScheduleService {
                     .placesLeft(train.getPlacesNumber())
                     .build();
 
-            logger.info("Schedule to save: " + schedule.toString());
+            String msg = "Schedule to save: " + schedule.toString();
+            logger.info(msg);
+            kafkaTemplate.send("topic1", msg);
 
             return scheduleRepository.save(schedule);
         } else {
-            logger.info("Schedule item: " + scheduleDto.toString() + " already exists");
+            String msg = "Schedule item: " + scheduleDto.toString() + " already exists";
+            logger.info(msg);
             throw (new BusinessException(ExceptionMessage.OBJECT_ALREADY_EXISTS));
         }
     }

@@ -10,6 +10,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
+import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.orm.hibernate5.LocalSessionFactoryBean;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -26,6 +27,9 @@ public class PassengerService {
     @Autowired
     private PassengerRepository repository;
     Logger logger = LoggerFactory.getLogger(ScheduleService.class);
+
+    @Autowired
+    private KafkaTemplate<String, String> kafkaTemplate;
 
     public PassengerService() {}
     public PassengerService(PassengerRepository repository) {this.repository = repository;}
@@ -50,7 +54,9 @@ public class PassengerService {
                     .build();
             return repository.save(passenger);
         } else {
-            logger.warn("Passenger with name " + name + " and surname " + surname + " and birthday " + birthDate + " already exists in database");
+            String msg = "Passenger with name " + name + " and surname " + surname + " and birthday " + birthDate + " already exists in database";
+            logger.warn(msg);
+            kafkaTemplate.send("topic1", msg);
             throw new BusinessException(ExceptionMessage.OBJECT_ALREADY_EXISTS);
         }
     }

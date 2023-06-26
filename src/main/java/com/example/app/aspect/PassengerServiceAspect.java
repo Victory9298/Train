@@ -33,6 +33,8 @@ public class PassengerServiceAspect {
     @After("anyPassengerervice()")
     public void afterAdvice(JoinPoint joinPoint)
     {
-        logger.info("End operation: " + joinPoint.getSignature());
+        String msg = "End operation: " + joinPoint.getSignature();
+        logger.info(msg);
+        kafkaTemplate.send("topic1", msg);
     }
 }
