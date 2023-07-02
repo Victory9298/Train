@@ -5,6 +5,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
+import org.springframework.kafka.core.KafkaTemplate;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -23,6 +24,9 @@ class PassengerRepositoryTest {
     String name = "Ivan", surname = "Ivanov";
     LocalDateTime birthDate = LocalDateTime.of(2005, 05, 12, 00, 00, 00);
     Passenger passenger;
+
+    @Autowired
+    private KafkaTemplate<String, String> kafkaTemplate;
 
     @BeforeEach
     void setUp() {
