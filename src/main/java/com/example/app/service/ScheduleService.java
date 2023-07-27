@@ -6,6 +6,7 @@ import com.example.app.error.ExceptionMessage;
 import com.example.app.error.exception.BusinessException;
 import com.example.app.repository.ScheduleDBRepository;
 import com.example.app.repository.ScheduleRepository;
+import com.example.app.repository.TrainRepository;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.kafka.core.KafkaTemplate;
@@ -42,19 +43,6 @@ public class ScheduleService {
 
     public ScheduleService() {}
 
-    public ScheduleService(ScheduleRepository scheduleRepository,
-                           ScheduleDBService scheduleDBService,
-                           StationService stationService,
-                           TrainService trainService) {
-        this.scheduleRepository = scheduleRepository;
-        this.scheduleDBService = scheduleDBService;
-        this.stationService = stationService;
-        this.trainService = trainService;
-    }
-
-    public ScheduleService(ScheduleRepository scheduleRepository) {
-        this.scheduleRepository = scheduleRepository;
-    }
     public List<ScheduleDB> getScheduleNative() {
         return scheduleDBService.getScheduleNative();
     }

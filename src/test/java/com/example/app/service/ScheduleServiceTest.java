@@ -40,13 +40,6 @@ class ScheduleServiceTest {
     TrainService trainService;
     @Mock TrainRepository trainRepository;
 
-
-    @BeforeEach
-    void setUp() {
-        this.trainService = new TrainService(this.trainRepository);
-        this.scheduleService = new ScheduleService(this.repo, this.scheduleDBService, this.stationService, this.trainService);
-    }
-
     @Test
     void getTrainFromToStation() {
 

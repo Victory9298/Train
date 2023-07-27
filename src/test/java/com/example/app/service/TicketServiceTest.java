@@ -6,10 +6,7 @@ import com.example.app.entity.Schedule;
 import com.example.app.entity.Station;
 import com.example.app.entity.Train;
 import com.example.app.error.exception.BusinessException;
-import com.example.app.repository.PassengerRepository;
-import com.example.app.repository.ScheduleDBRepository;
-import com.example.app.repository.ScheduleRepository;
-import com.example.app.repository.TicketRepository;
+import com.example.app.repository.*;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -32,6 +29,10 @@ import static org.mockito.Mockito.lenient;
 class TicketServiceTest {
 
     @Mock
+    TrainRepository trainRepository;
+    @InjectMocks
+    TrainService trainService;
+    @Mock
     TicketRepository ticketRepository;
     @InjectMocks
     TicketService ticketService;
@@ -43,11 +44,6 @@ class TicketServiceTest {
     PassengerRepository passengerRepository;
     @InjectMocks
     PassengerService passengerService;
-
-    @BeforeEach
-    public void setup(){
-        ticketService = Mockito.mock(TicketService.class);
-    }
 
     @Test
     void buyTicket() {
@@ -72,23 +68,23 @@ class TicketServiceTest {
         List<Passenger> passengerList = new ArrayList<>();
         passengerList.add(passenger);
 
-        ScheduleService scheduleService = Mockito.mock(ScheduleService.class);
+        lenient().when(scheduleRepository.findById(1)).thenReturn(Optional.of(scheduleItem));
 
-        lenient().when((passengerRepository.findPassengerByNameAndSurnameAndBirthDate(name, surname, birthDate)))
-                .thenReturn((passengerList));
-        lenient().when(scheduleService.findById(1))
-                .thenReturn(Optional.of(scheduleItem));
+        lenient().when(scheduleRepository.findScheduleByTrainAndStation(Optional.of(train),
+                Optional.of(station))).thenReturn(List.of(scheduleItem));
 
-        lenient().when(ticketService.arePlacesAvailable(scheduleItem))
-                .thenReturn(true);
-        lenient().when(ticketService.enoughTimeBeforeDepart(1, 1))
+        lenient().when(passengerRepository.findPassengerByNameAndSurnameAndBirthDate("Ivan", "Ivanov", birthDate))
+                .thenReturn(List.of(passenger));
+
+        lenient().when(trainService.findTrainById(1)).thenReturn(Optional.of(train));
+
+        lenient().when(scheduleService.checkMinutesLeftBeforeTrainTime(10, 1, 2))
                 .thenReturn(true);
 
        String ticketResult = ticketService.buyTicket(passengerDto, 1, 2, "2023-06-10@00:00:00");
-       // Но должно быть так
-//       String expectedResult = "success";
-//       assertEquals(ticketResult, expectedResult);
-        assertNull(ticketResult);
+       String expectedResult = "success";
+       assertEquals(ticketResult, expectedResult);
+       assertNull(ticketResult);
     }
 
     @Test

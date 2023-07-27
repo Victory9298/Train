@@ -20,13 +20,9 @@ public class TrainService {
     @Autowired
     private TrainRepository repository;
 
-    Logger logger = LoggerFactory.getLogger(TrainService.class);
+    private Logger logger = LoggerFactory.getLogger(TrainService.class);
 
     public TrainService() {
-    }
-
-    public TrainService(TrainRepository repository) {
-        this.repository = repository;
     }
 
     public List<Train> findAllTrains() {

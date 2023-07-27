@@ -26,23 +26,21 @@ import java.util.Optional;
 public class TicketService {
 
     @Autowired
-    public TicketRepository repository;
+    private TicketRepository repository;
     @Autowired
     private ScheduleService scheduleService;
     @Autowired
-    public ScheduleRepository scheduleRepository;
+    private ScheduleRepository scheduleRepository;
     @Autowired
-    public PassengerRepository passengerRepository;
+    private PassengerRepository passengerRepository;
     @Autowired
-    public PassengerService passengerService;
-    Logger logger = LoggerFactory.getLogger(TicketService.class);
+    private PassengerService passengerService;
+    private Logger logger = LoggerFactory.getLogger(TicketService.class);
     @Autowired
     private KafkaTemplate<String, String> kafkaTemplate;
     private static final int MIN_PERIOD_BEFORE_DEPART = 10;
 
     public TicketService() {};
-
-    public TicketService(TicketRepository repository) {this.repository = repository;};
 
     public Iterable<Ticket> getAllRegisteredPassengers() {
 
@@ -88,7 +86,7 @@ public class TicketService {
             } else {
                 message = "It is too late";
             }
-//            throw new BusinessException(message);
+
             logger.info("buy ticket: " + message);
             kafkaTemplate.send("topic1", "buy ticket: " + message);
             return message;
@@ -109,7 +107,7 @@ public class TicketService {
         }
     }
 
-    public Boolean enoughTimeBeforeDepart(Integer train_id, Integer station_id) {
+    private Boolean enoughTimeBeforeDepart(Integer train_id, Integer station_id) {
 
         if (!scheduleService.checkMinutesLeftBeforeTrainTime(MIN_PERIOD_BEFORE_DEPART, train_id, station_id)) {
             String errorMessage = "Less than 10 minutes before train departure. Ticket can't be bought.";
