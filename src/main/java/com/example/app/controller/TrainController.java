@@ -14,7 +14,6 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 @Tag(description = "Api to manage trains",
         name = "Train Resource")
-@SecurityRequirement(name = "Authorization")
 public class TrainController {
 
     private final TrainRepository repository;
@@ -33,7 +32,6 @@ public class TrainController {
     @Operation(summary = "Get all trains",
             description = "Provides a list of all trains")
     @GetMapping("/train/all")
-    @PreAuthorize("hasAnyAuthority('EMPLOYEE', 'ADMIN', 'CLIENT')")
     List<Train> all() {
         return trainService.findAllTrains();
     }
@@ -41,7 +39,6 @@ public class TrainController {
     @Operation(summary = "Find train by id",
             description = "Find train by id")
     @GetMapping("/train/{id}")
-    @PreAuthorize("hasAnyAuthority('EMPLOYEE', 'ADMIN', 'CLIENT')")
     public Optional<Train> findTrainById(@PathVariable int id) {
         return trainService.findTrainById(id);
     }
@@ -49,7 +46,6 @@ public class TrainController {
     @Operation(summary = "Add new train",
             description = "Add new train")
     @PostMapping(path="/train")
-    @PreAuthorize("hasAnyAuthority('EMPLOYEE', 'ADMIN')")
     public @ResponseBody Train addNewTrain(@RequestBody Train train) {
         return trainService.addNewTrain(train);
     }
@@ -57,7 +53,6 @@ public class TrainController {
     @Operation(summary = "Delete train",
             description = "Delete train")
     @DeleteMapping("/train/{id}")
-    @PreAuthorize("hasAnyAuthority('ADMIN')")
     void deleteTrain(@PathVariable int id) {
         trainService.deleteTrain(id);
     }

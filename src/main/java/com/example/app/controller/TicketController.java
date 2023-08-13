@@ -16,7 +16,6 @@ import java.util.Optional;
 @RestController
 @Tag(description = "Api to manage tickets",
         name = "Ticket Resource")
-@SecurityRequirement(name = "Authorization")
 public class TicketController {
 
     private final TicketRepository repository;
@@ -29,7 +28,6 @@ public class TicketController {
     @Operation(summary = "Get all passengers",
             description = "Provides a list of all passengers that bought tickets")
     @GetMapping("/ticket/all")
-    @PreAuthorize("hasAnyAuthority('EMPLOYEE', 'ADMIN')")
     Iterable<Ticket> getAllRegisteredPassengers() {
        return ticketService.getAllRegisteredPassengers();
     }
@@ -37,7 +35,6 @@ public class TicketController {
     @Operation(summary = "Buy ticket",
             description = "Check if it is possible to buy and create a database record")
     @PostMapping (path="/ticket/buy")
-    @PreAuthorize("hasAnyAuthority('CLIENT', 'ADMIN')")
     public @ResponseBody void  buyTicket (@RequestBody PassengerDto passengerDto,
                                           @RequestParam Integer scheduleId,
                                           @RequestParam Integer end_station_id,
@@ -48,7 +45,6 @@ public class TicketController {
     @Operation(summary = "Get ticket by id",
             description = "Finds ticket by id")
     @GetMapping("/ticket/{id}")
-    @PreAuthorize("hasAnyAuthority('EMPLOYEE', 'ADMIN', 'CLIENT')")
     Optional<Ticket> findTicketById(@PathVariable Integer id) {
         return ticketService.findTicketById(id);
     }
@@ -56,7 +52,6 @@ public class TicketController {
     @Operation(summary = "Delete ticket by id",
             description = "Delete ticket by id")
     @DeleteMapping("/ticket/{id}")
-    @PreAuthorize("hasAnyAuthority('EMPLOYEE', 'ADMIN', 'CLIENT')")
     void deletTicketById(@PathVariable Integer id) {
         ticketService.deletTicketById(id);
     }

@@ -19,7 +19,6 @@ import java.util.List;
 @RestController
 @Tag(description = "Api to manage passengers",
         name = "Passenger Resource")
-@SecurityRequirement(name = "Authorization")
 public class PassengerController {
 
     @Autowired
@@ -32,7 +31,6 @@ public class PassengerController {
     @Operation(summary = "Get all passengers",
             description = "Provides a list of all passengers")
     @GetMapping("/passenger/all")
-    @PreAuthorize("hasAnyAuthority('EMPLOYEE', 'ADMIN')")
     public List<Passenger> all() {
         return passengerService.findAllPassengers();
     }
@@ -40,7 +38,6 @@ public class PassengerController {
     @Operation(summary = "Get passenger by id",
             description = "Provides passenger entity by id")
     @GetMapping("/passenger/{id}")
-    @PreAuthorize("hasAnyAuthority('EMPLOYEE', 'ADMIN')")
     public Passenger findPassengerById(@PathVariable int id) {
         return passengerService.findPassengerById(id);
     }
@@ -48,7 +45,6 @@ public class PassengerController {
     @Operation(summary = "Find passenger by name, surname and birth date",
             description = "Provides a list of passengers, found by name, surname and birth date")
     @GetMapping("/passenger/find")
-    @PreAuthorize("hasAnyAuthority('EMPLOYEE', 'ADMIN')")
     public List<Passenger> findPassengerByNameAndSurnameAndBirthDate(@RequestParam String name,
                                                                      @RequestParam String surname,
                                                                      @RequestParam CharSequence birthDate) {
@@ -58,7 +54,6 @@ public class PassengerController {
     @Operation(summary = "Add passenger",
             description = "Add passenger")
     @PostMapping(path="/passenger")
-    @PreAuthorize("hasAnyAuthority('EMPLOYEE', 'ADMIN')")
     public @ResponseBody Passenger addNewPassenger(@RequestBody PassengerDto passengerDto) {
         return passengerService.addNewPassenger(passengerDto);
     }
@@ -66,7 +61,6 @@ public class PassengerController {
     @Operation(summary = "Delete passenger by id",
             description = "Delete passenger by id or throw exception")
     @DeleteMapping("/passenger/{id}")
-    @PreAuthorize("hasAnyAuthority('ADMIN')")
     void deletePassenger(@PathVariable int id) {
         passengerService.deletePassenger(id);
     }

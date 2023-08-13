@@ -20,7 +20,6 @@ import java.util.Optional;
 
 @Tag(description = "Api to manage schedule",
         name = "Schedule Resource")
-@SecurityRequirement(name = "Authorization")
 @RestController
 public class ScheduleController {
 
@@ -34,7 +33,6 @@ public class ScheduleController {
     @Operation(summary = "Get all schedule elements by native query",
             description = "Provides a list of schedule elements")
     @GetMapping("/schedule/all/native")
-    @PreAuthorize("hasAnyAuthority('EMPLOYEE', 'ADMIN', 'CLIENT')")
     List<ScheduleDB> getScheduleNative() {
         return scheduleService.getScheduleNative();
     }
@@ -42,7 +40,6 @@ public class ScheduleController {
     @Operation(summary = "Get all schedule elements by jpql",
             description = "Provides a list of schedule elements")
     @GetMapping("/schedule/all/jpql")
-    @PreAuthorize("hasAnyAuthority('EMPLOYEE', 'ADMIN', 'CLIENT')")
     List<ScheduleDB> getScheduleJpql() {
         return scheduleService.getScheduleJpql();
     }
@@ -50,7 +47,6 @@ public class ScheduleController {
     @Operation(summary = "Get all schedule elements by jpa",
             description = "Provides a list of schedule elements")
     @GetMapping("/schedule/all/jpa")
-    @PreAuthorize("hasAnyAuthority('EMPLOYEE', 'ADMIN', 'CLIENT')")
     List<Schedule> getScheduleJpa() {
         return scheduleService.getScheduleJpa();
     }
@@ -58,14 +54,12 @@ public class ScheduleController {
     @Operation(summary = "Get schedule elements by station id",
             description = "Provides a list of schedule elements, found by station id")
     @GetMapping("/schedule/station/{station_id}")
-    @PreAuthorize("hasAnyAuthority('EMPLOYEE', 'ADMIN', 'CLIENT')")
     Iterable<Schedule> getScheduleByStation(@PathVariable Integer station_id) {
         return scheduleService.getScheduleByStation(station_id);
     }
     @Operation(summary = "Find a train between stations",
             description = "Find a train between 2 station over a period of time")
     @GetMapping("/schedule/findRoute")
-    @PreAuthorize("hasAnyAuthority('EMPLOYEE', 'ADMIN', 'CLIENT')")
     List<Train> getTrainFromToStation(@RequestParam CharSequence fromTime,
                                       @RequestParam CharSequence toTime,
                                       @RequestParam Integer fromStation_id,
@@ -77,7 +71,6 @@ public class ScheduleController {
     @Operation(summary = "check if there are 10 minutes left before the train departs ",
             description = "check if there are 10 minutes left before the train, found by id, departs")
     @GetMapping("/schedule/minutesleft")
-    @PreAuthorize("hasAnyAuthority('EMPLOYEE', 'ADMIN', 'CLIENT')")
     Boolean checkMinutesLeftBeforeTrainTime(@RequestParam Integer train_id,
                                             @RequestParam Integer station_id,
                                             @RequestParam Integer minutes) {
@@ -88,7 +81,6 @@ public class ScheduleController {
     @Operation(summary = "Add new schedule item",
             description = "Add new schedule item")
     @PostMapping(path="/schedule")
-    @PreAuthorize("hasAnyAuthority('EMPLOYEE', 'ADMIN')")
     public @ResponseBody Schedule addNewScheduleItem(@RequestBody ScheduleDto scheduleDto)  {
         return scheduleService.addNewScheduleItem(scheduleDto);
     }
@@ -96,7 +88,6 @@ public class ScheduleController {
     @Operation(summary = "Delete schedule item",
             description = "Deletes schedule item found by id")
     @DeleteMapping("/schedule/{id}")
-    @PreAuthorize("hasAnyAuthority('ADMIN')")
     void deleteScheduleItem(@PathVariable Integer id) {
         scheduleService.deleteScheduleItem(id);
     }

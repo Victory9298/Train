@@ -14,7 +14,6 @@ import java.util.Optional;
 @RestController
 @Tag(description = "Api to manage stations",
         name = "Stations Resource")
-@SecurityRequirement(name = "Authorization")
 public class StationController {
     private final StationRepository repository;
     private final StationService stationService;
@@ -27,7 +26,6 @@ public class StationController {
     @Operation(summary = "Get all stations",
             description = "Provides a list of all stations")
     @GetMapping("/station/all")
-    @PreAuthorize("hasAnyAuthority('EMPLOYEE', 'ADMIN', 'CLIENT')")
     List<Station> all() {
         return stationService.findAllStations();
     }
@@ -35,7 +33,6 @@ public class StationController {
     @Operation(summary = "Get station by id",
             description = "Finds station by id")
     @GetMapping("/station/{id}")
-    @PreAuthorize("hasAnyAuthority('EMPLOYEE', 'ADMIN', 'CLIENT')")
     public Optional<Station> findStationById(@PathVariable int id) {
         return stationService.findStationById(id);
     }
@@ -43,7 +40,6 @@ public class StationController {
     @Operation(summary = "Add new station",
             description = "Adds new station")
     @PostMapping(path="/station")
-    @PreAuthorize("hasAnyAuthority('EMPLOYEE', 'ADMIN')")
     public @ResponseBody Station addNewStation(@RequestBody Station station) {
         return stationService.addNewStation(station);
     }
@@ -51,7 +47,6 @@ public class StationController {
     @Operation(summary = "Delete station",
             description = "Deletes station found by id")
     @DeleteMapping("/station/{id}")
-    @PreAuthorize("hasAnyAuthority('ADMIN')")
     void deleteStation(@PathVariable int id) {
         stationService.deleteStation(id);
     }
