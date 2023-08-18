@@ -22,7 +22,7 @@ import org.springframework.orm.hibernate5.LocalSessionFactoryBean;
 @EntityScan("com.example.app.entity")
 @EnableJpaRepositories
 @OpenAPIDefinition
-@SecurityScheme(name = "Authorization", scheme = "apiKey", type = SecuritySchemeType.APIKEY, in = SecuritySchemeIn.HEADER)
+@SecurityScheme(name = "Authorization", scheme = "HTTP", type = SecuritySchemeType.HTTP, in = SecuritySchemeIn.HEADER)
 public class TrainApplication {
 
 	public static void main(String[] args) {

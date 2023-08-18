@@ -2,6 +2,7 @@ package com.example.app.security;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
@@ -20,13 +21,17 @@ import org.springframework.security.provisioning.InMemoryUserDetailsManager;
 import org.springframework.security.web.SecurityFilterChain;
 
 @Configuration
-@EnableWebSecurity
-public class SecurityConfig {
+@EnableWebSecurity(debug = true)
+public class SecurityConfig  {
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
+
+        http.csrf().disable();
+
         http.authorizeHttpRequests()
                 .requestMatchers("/train/**").hasAnyRole("USER", "ADMIN")
+//                .requestMatchers(HttpMethod.POST, "/passenger").hasAnyRole("ADMIN")
                 .requestMatchers("/**").hasAnyRole("ADMIN")
                 .and()
                 .formLogin().permitAll();
