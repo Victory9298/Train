@@ -16,4 +16,9 @@ public interface UserRepository extends JpaRepository<User, Integer> {
 //            "JOIN user_role AS r ON uc.roleID = r.id " +
 //            "WHERE uc.userID=?1")
     List<String> findAllRoleById(Integer id);
+
+    Optional<User> findByUsername(String username);
+    Boolean existsByUsername(String username);
+
+    Boolean existsByEmail(String email);
 }

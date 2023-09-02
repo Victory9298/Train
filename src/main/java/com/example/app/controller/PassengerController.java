@@ -8,6 +8,7 @@ import com.example.app.service.PassengerService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -17,11 +18,12 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 @RestController
+@CrossOrigin(origins = "*", maxAge = 3600)
 @Tag(description = "Api to manage passengers",
         name = "Passenger Resource")
+@RequestMapping("/api/test/")
 public class PassengerController {
 
-    @Autowired
     private PassengerService passengerService;
 
     public PassengerController(PassengerService passengerService) {
@@ -54,8 +56,9 @@ public class PassengerController {
     @Operation(summary = "Add passenger",
             description = "Add passenger")
     @PostMapping(path="/passenger")
-    public @ResponseBody Passenger addNewPassenger(@RequestBody PassengerDto passengerDto) {
-        return passengerService.addNewPassenger(passengerDto);
+    public ResponseEntity<?> addNewPassenger(@Valid @RequestBody PassengerDto passengerDto) {
+        Passenger passenger = passengerService.addNewPassenger(passengerDto);
+        return ResponseEntity.ok(passenger);
     }
 
     @Operation(summary = "Delete passenger by id",

@@ -14,21 +14,21 @@ import org.springframework.transaction.annotation.Transactional;
 public class UserService {
     @Autowired
     private UserRepository repository;
-    @Transactional
-    public User createUser(String commonname, String email) {
-
-        Optional<User> user = repository.findByEmail(email);
-
-        if (user.isPresent()) {
-            return user.get();
-        }
-        User userEntity = new User();
-        userEntity.setCommonname(commonname);
-        userEntity.setEmail(email);
-        userEntity.setCreatedAt(LocalDateTime.now());
-        repository.save(userEntity);
-        System.out.println(userEntity.getId());
-//        createProfile(userEntity.getId());
-        return userEntity;
-    }
+//    @Transactional
+//    public User createUser(String commonname, String email) {
+//
+//        Optional<User> user = repository.findByEmail(email);
+//
+//        if (user.isPresent()) {
+//            return user.get();
+//        }
+//        User userEntity = new User();
+//        userEntity.setCommonname(commonname);
+//        userEntity.setEmail(email);
+//        userEntity.setCreatedAt(LocalDateTime.now());
+//        repository.save(userEntity);
+//        System.out.println(userEntity.getId());
+////        createProfile(userEntity.getId());
+//        return userEntity;
+//    }
 }
