@@ -3,6 +3,7 @@ package com.example.app.dto;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonPOJOBuilder;
+import com.fasterxml.jackson.datatype.jsr310.deser.LocalDateTimeDeserializer;
 import jakarta.validation.constraints.NotNull;
 import jdk.jfr.DataAmount;
 import lombok.Builder;
@@ -13,6 +14,7 @@ import lombok.ToString;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
+import java.time.format.DateTimeFormatter;
 
 @Data
 @Builder
@@ -26,12 +28,10 @@ public class ScheduleDto {
     private Integer trainId;
 
     @NotNull
-    @JsonDeserialize(as = LocalDateTime.class)
-    private LocalDateTime arrivalTime;
+    private CharSequence arrivalTime;
 
     @NotNull
-    @JsonDeserialize(as = LocalDateTime.class)
-    private LocalDateTime departureTime;
+    private CharSequence departureTime;
 
     public Integer getStationId() {
         return stationId;
@@ -42,10 +42,12 @@ public class ScheduleDto {
     }
 
     public LocalDateTime getArrivalTime() {
-        return arrivalTime;
+
+        return LocalDateTime.parse(arrivalTime, DateTimeFormatter.ofPattern("yyyy-MM-dd@HH:mm:ss"));
     }
 
     public LocalDateTime getDepartureTime() {
-        return departureTime;
+
+        return LocalDateTime.parse(departureTime, DateTimeFormatter.ofPattern("yyyy-MM-dd@HH:mm:ss"));
     }
 }

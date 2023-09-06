@@ -18,12 +18,11 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 
+@RestController
 @Tag(description = "Api to manage schedule",
         name = "Schedule Resource")
-@RestController
 public class ScheduleController {
 
-    @Autowired
     private ScheduleService scheduleService;
 
     public ScheduleController(ScheduleService scheduleService) {

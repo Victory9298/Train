@@ -1,12 +1,15 @@
 package com.example.app.entity;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.fasterxml.jackson.datatype.jsr310.deser.LocalDateTimeDeserializer;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import lombok.*;
 
 import java.time.LocalDateTime;
 import java.time.LocalTime;
+import java.time.format.DateTimeFormatter;
 
 @Entity
 @Builder
@@ -30,13 +33,15 @@ public class Schedule {
     private Train train;
 
     @NotNull
-    @JsonFormat(pattern = "yyyy-MM-dd@HH:mm:ss")
-    @Column(name = "departure_time")
+    @JsonDeserialize(using = LocalDateTimeDeserializer.class)
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd@HH:mm:ss")
+    @Column(name = "departure_Time")
     LocalDateTime departureTime;
 
     @NotNull
-    @JsonFormat(pattern = "yyyy-MM-dd@HH:mm:ss")
-    @Column(name = "arrival_time")
+    @JsonDeserialize(using = LocalDateTimeDeserializer.class)
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd@HH:mm:ss")
+    @Column(name = "arrival_Time")
     LocalDateTime arrivalTime;
 
     @NotNull
